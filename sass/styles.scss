@@ -8,14 +8,16 @@
         padding-left: 0;
         margin-left: 0;
         .servicelink {
-            background-position: 2px 0px;
+            background-position: 2px 0;
             background-size: 28px;
             background-repeat: no-repeat;
             background-color: transparent;
             display: inline-block;
             padding: 4px 4px 4px 40px;
             margin: 0.2rem 0;
-            &:active, &:hover, &:visited {
+            &:active,
+            &:hover,
+            &:visited {
                 text-decoration: none !important;
             }
         }
