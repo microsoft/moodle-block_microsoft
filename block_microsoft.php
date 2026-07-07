@@ -24,6 +24,9 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
+use core\context\course;
+use core\context\system;
+use core\url;
 use local_o365\feature\coursesync\utils;
 use local_onenote\api\base;
 
@@ -122,9 +125,9 @@ class block_microsoft extends block_base {
         $html .= '<p>' . get_string('o365matched_complete_authreq', 'block_microsoft') . '</p>';
 
         if ($uselogin === true) {
-            $html .= '<p>' . html_writer::link(new moodle_url('/local/o365/ucp.php'), $langlogin) . '</p>';
+            $html .= '<p>' . html_writer::link(new url('/local/o365/ucp.php'), $langlogin) . '</p>';
         } else {
-            $html .= '<p>' . html_writer::link(new moodle_url('/local/o365/ucp.php?action=connecttoken'), $langlogin) . '</p>';
+            $html .= '<p>' . html_writer::link(new url('/local/o365/ucp.php?action=connecttoken'), $langlogin) . '</p>';
         }
 
         return $html;
@@ -144,7 +147,7 @@ class block_microsoft extends block_base {
 
         $courseid = $COURSE->id;
         $coursesyncenabled = utils::is_enabled();
-        $iscoursecontext = $this->page->context instanceof \context_course && $this->page->context->instanceid !== SITEID;
+        $iscoursecontext = $this->page->context instanceof course && $this->page->context->instanceid !== SITEID;
         $iscoursesyncenabled = utils::is_course_sync_enabled($courseid);
 
         $html = '';
@@ -155,7 +158,7 @@ class block_microsoft extends block_base {
             $coursesyncsetting = get_config('local_o365', 'coursesync');
             $allowedmanageteamsyncpercourse = get_config('local_o365', 'course_sync_per_course');
             if ($coursesyncsetting == 'oncustom' && $allowedmanageteamsyncpercourse) {
-                $configuresyncurl = new moodle_url(
+                $configuresyncurl = new url(
                     '/blocks/microsoft/configure_sync.php',
                     ['course' => $courseid]
                 );
@@ -183,7 +186,7 @@ class block_microsoft extends block_base {
                             continue;
                         }
 
-                        $url = new moodle_url($microsoft365urls[$feature]);
+                        $url = new url($microsoft365urls[$feature]);
                         $resourcename = get_string('course_feature_' . $feature, 'block_microsoft');
                         $items[] = html_writer::link(
                             $url,
@@ -197,7 +200,7 @@ class block_microsoft extends block_base {
                         switch (get_config('local_o365', 'course_reset_teams')) {
                             case COURSE_SYNC_RESET_SITE_SETTING_PER_COURSE:
                                 // Allow user to configure reset actions.
-                                $configurereseturl = new moodle_url(
+                                $configurereseturl = new url(
                                     '/blocks/microsoft/configure_reset.php',
                                     ['course' => $courseid]
                                 );
@@ -316,7 +319,7 @@ class block_microsoft extends block_base {
         if (!empty($user->picture)) {
             $html .= '<div class="profilepicture">';
             $picturehtml = $OUTPUT->user_picture($user, ['size' => 100, 'class' => 'block_microsoft_profile']);
-            $profileurl = new moodle_url('/user/profile.php', ['id' => $USER->id]);
+            $profileurl = new url('/user/profile.php', ['id' => $USER->id]);
             if (!empty($delveurl)) {
                 // If "My Delve" is enabled, clicking the user picture should take you to their Delve page.
                 $picturehtml = str_replace($profileurl->out(), $delveurl, $picturehtml);
@@ -330,7 +333,7 @@ class block_microsoft extends block_base {
 
         $userupn = \local_o365\utils::get_o365_upn($USER->id);
 
-        if ($this->page->context instanceof \context_course && $this->page->context->instanceid !== SITEID) {
+        if ($this->page->context instanceof course && $this->page->context->instanceid !== SITEID) {
             // Course SharePoint Site.
             if (!empty($this->globalconfig->settings_showcoursespsite) && !empty($o365config->sharepointlink)) {
                 $sharepointstr = get_string('linksharepoint', 'block_microsoft');
@@ -421,14 +424,14 @@ class block_microsoft extends block_base {
 
         // Configure Outlook Sync.
         if (!empty($this->globalconfig->settings_showoutlooksync)) {
-            $outlookurl = new moodle_url('/local/o365/ucp.php?action=calendar');
+            $outlookurl = new url('/local/o365/ucp.php?action=calendar');
             $outlookstr = get_string('linkoutlook', 'block_microsoft');
             $items[] = html_writer::link($outlookurl, $outlookstr, ['class' => 'servicelink block_microsoft_outlook']);
         }
 
         // Preferences.
         if (!empty($this->globalconfig->settings_showpreferences)) {
-            $prefsurl = new moodle_url('/local/o365/ucp.php');
+            $prefsurl = new url('/local/o365/ucp.php');
             $prefsstr = get_string('linkprefs', 'block_microsoft');
             $items[] = html_writer::link($prefsurl, $prefsstr, ['class' => 'servicelink block_microsoft_preferences']);
         }
@@ -440,7 +443,7 @@ class block_microsoft extends block_base {
             || local_o365_connectioncapability($USER->id, 'unlink')
         ) {
             if (!empty($this->globalconfig->settings_showmanageo365conection)) {
-                $connecturl = new moodle_url('/local/o365/ucp.php', ['action' => 'connection']);
+                $connecturl = new url('/local/o365/ucp.php', ['action' => 'connection']);
                 $connectstr = get_string('linkconnection', 'block_microsoft');
                 $items[] = html_writer::link($connecturl, $connectstr, ['class' => 'servicelink block_microsoft_connection']);
             }
@@ -459,7 +462,7 @@ class block_microsoft extends block_base {
         $contexttocheck = null;
 
         if ($currentcontext->contextlevel == CONTEXT_SYSTEM) {
-            $contexttocheck = context_system::instance();
+            $contexttocheck = system::instance();
         } else {
             $parentcontexts = $currentcontext->get_parent_contexts(true);
             foreach ($parentcontexts as $parentcontext) {
@@ -469,7 +472,7 @@ class block_microsoft extends block_base {
                 }
             }
             if (!$contexttocheck) {
-                $contexttocheck = context_system::instance();
+                $contexttocheck = system::instance();
             }
         }
 
@@ -478,7 +481,7 @@ class block_microsoft extends block_base {
         }
 
         if ($hasaccesstocourserequest && !empty($this->globalconfig->settings_courserequest)) {
-            $courserequesturl = new moodle_url('/local/o365/courserequest.php');
+            $courserequesturl = new url('/local/o365/courserequest.php');
             $courserequestattrs = ['target' => '_blank', 'class' => 'servicelink block_microsoft_courserequest'];
             $courserequeststr = get_string('linkcourserequest', 'block_microsoft');
             $items[] = html_writer::link($courserequesturl, $courserequeststr, $courserequestattrs);
@@ -499,7 +502,7 @@ class block_microsoft extends block_base {
 
         $html = html_writer::tag('h5', get_string('notconnected', 'block_microsoft'));
 
-        $connecturl = new moodle_url('/local/o365/ucp.php');
+        $connecturl = new url('/local/o365/ucp.php');
         $connectstr = get_string('connecttoo365', 'block_microsoft');
 
         $items = [];
@@ -586,7 +589,7 @@ class block_microsoft extends block_base {
         }
 
         if (!class_exists('\local_onenote\api\base')) {
-            $url = new moodle_url('https://www.office.com/launch/onenote');
+            $url = new url('https://www.office.com/launch/onenote');
             $stropennotebook = get_string('linkonenote', 'block_microsoft');
             $linkattrs = [
                 'onclick' => 'window.open(this.href,\'_blank\'); return false;',
@@ -618,7 +621,7 @@ class block_microsoft extends block_base {
                 }
 
                 if (!empty($moodlenotebook)) {
-                    $url = new moodle_url($moodlenotebook['url']);
+                    $url = new url($moodlenotebook['url']);
                     $stropennotebook = get_string('linkonenote', 'block_microsoft');
                     $linkattrs = [
                         'onclick' => 'window.open(this.href,\'_blank\'); return false;',
