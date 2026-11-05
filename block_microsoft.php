@@ -130,7 +130,24 @@ class block_microsoft extends block_base {
             $html .= '<p>' . html_writer::link(new url('/local/o365/ucp.php?action=connecttoken'), $langlogin) . '</p>';
         }
 
+        $customlinkitems = $this->get_custom_link_items(false);
+        if ($customlinkitems) {
+            $html .= html_writer::alist($customlinkitems);
+        }
+
         return $html;
+    }
+
+    /**
+     * Check whether a link in the course section of the block is enabled by the admin settings.
+     *
+     * Settings which have never been saved default to enabled, so sites upgrading keep their existing links.
+     *
+     * @param string $name The name of the setting.
+     * @return bool
+     */
+    protected function is_course_setting_enabled(string $name): bool {
+        return !empty($this->globalconfig->$name ?? 1);
     }
 
     /**
@@ -141,7 +158,7 @@ class block_microsoft extends block_base {
     protected function get_course_content() {
         global $COURSE;
 
-        if ($COURSE->id == SITEID) {
+        if ($COURSE->id == SITEID || !$this->is_course_setting_enabled('settings_showcourselinks')) {
             return '';
         }
 
@@ -154,7 +171,10 @@ class block_microsoft extends block_base {
         $items = [];
 
         // Link to course sync options.
-        if (has_capability('local/o365:teamowner', $this->page->context)) {
+        if (
+            $this->is_course_setting_enabled('settings_showcourseconfiguresync') &&
+            has_capability('local/o365:teamowner', $this->page->context)
+        ) {
             $coursesyncsetting = get_config('local_o365', 'coursesync');
             $allowedmanageteamsyncpercourse = get_config('local_o365', 'course_sync_per_course');
             if ($coursesyncsetting == 'oncustom' && $allowedmanageteamsyncpercourse) {
@@ -182,7 +202,10 @@ class block_microsoft extends block_base {
                     // Links to course features.
                     $microsoft365urls = utils::get_course_microsoft_365_urls($courseid);
                     foreach (['team', 'conversations', 'onedrive', 'calendar', 'notebook'] as $feature) {
-                        if (!isset($microsoft365urls[$feature])) {
+                        if (
+                            !isset($microsoft365urls[$feature]) ||
+                            !$this->is_course_setting_enabled('settings_showcourse' . $feature)
+                        ) {
                             continue;
                         }
 
@@ -200,7 +223,10 @@ class block_microsoft extends block_base {
                     }
 
                     // Link to course reset options.
-                    if (has_capability('moodle/course:reset', $this->page->context)) {
+                    if (
+                        $this->is_course_setting_enabled('settings_showcoursereset') &&
+                        has_capability('moodle/course:reset', $this->page->context)
+                    ) {
                         switch (get_config('local_o365', 'course_reset_teams')) {
                             case COURSE_SYNC_RESET_SITE_SETTING_PER_COURSE:
                                 // Allow user to configure reset actions.
@@ -533,6 +559,11 @@ class block_microsoft extends block_base {
             }
         }
 
+        // Custom links configured by the site administrator.
+        foreach ($this->get_custom_link_items(true) as $customlinkitem) {
+            $items[] = $customlinkitem;
+        }
+
         // Configure Outlook Sync.
         if (!empty($this->globalconfig->settings_showoutlooksync)) {
             $outlookurl = new url('/local/o365/ucp.php?action=calendar');
@@ -635,9 +666,44 @@ class block_microsoft extends block_base {
             $items[] = $link;
         }
 
+        foreach ($this->get_custom_link_items(false) as $customlinkitem) {
+            $items[] = $customlinkitem;
+        }
+
         $html .= html_writer::alist($items);
 
         return $html;
+    }
+
+    /**
+     * Get the custom links configured by the site administrator, rendered as HTML links.
+     *
+     * @param bool $connected Whether the user is connected to Microsoft 365. Links set to show only for connected
+     *                        users are skipped when this is false.
+     * @return string[] Array of link HTML, or empty array if no custom links are configured.
+     */
+    protected function get_custom_link_items(bool $connected): array {
+        $items = [];
+
+        foreach (block_microsoft_get_custom_links() as $customlink) {
+            if (!$customlink['showall'] && !$connected) {
+                continue;
+            }
+
+            $customlinkattrs = [
+                'target' => $customlink['target'],
+                'class' => 'servicelink block_microsoft_customlink',
+            ];
+            if ($customlink['target'] === '_blank') {
+                $customlinkattrs['rel'] = 'noopener noreferrer';
+            }
+            if ($customlink['iconurl'] !== null) {
+                $customlinkattrs['style'] = 'background-image: url("' . $customlink['iconurl'] . '");';
+            }
+            $items[] = html_writer::link($customlink['url'], s($customlink['name']), $customlinkattrs);
+        }
+
+        return $items;
     }
 
     /**

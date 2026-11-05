@@ -27,7 +27,7 @@
 // phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder -- The strings are organised by features.
 // phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment -- The strings are organised by features.
 
-$string['pluginname'] = 'Microsoft block';
+$string['pluginname'] = 'Microsoft';
 $string['contactadmin'] = 'Contact administrator for more information.';
 $string['error_nomoodlenotebook'] = 'Could not find your Moodle notebook.';
 $string['error_urlrequiredwhenenabled'] = 'This URL must be configured, since the "Show" option above is enabled.';
@@ -113,6 +113,22 @@ $string['settings_showmanageo365conection'] = 'Show "Microsoft 365 connection se
 $string['settings_showmanageo365conection_desc'] = 'Enable or disable the "Microsoft 365 connection settings" link in the block. <br /><b>Note:</b> This is shown to Microsoft 365 connected users and takes them to connection management page.';
 $string['settings_showcoursespsite'] = 'Show "Course SharePoint site"';
 $string['settings_showcoursespsite_desc'] = 'Enable or disable the "Course SharePoint site" link in the block. <br /><b>Note:</b> This is shown in the block when viewing a course that has an associated SharePoint site.';
+$string['settings_showcourselinks'] = 'Show course links';
+$string['settings_showcourselinks_desc'] = 'Enable or disable the whole course section of the block shown when viewing a course, including the course status heading and all course links. <br /><b>Note:</b> When disabled, the individual course link settings below are ignored.';
+$string['settings_showcourseconfiguresync'] = 'Show "Configure course sync"';
+$string['settings_showcourseconfiguresync_desc'] = 'Enable or disable the "Configure course sync" link in the course section of the block.';
+$string['settings_showcourseteam'] = 'Show "Team"';
+$string['settings_showcourseteam_desc'] = 'Enable or disable the "Team" link in the course section of the block.';
+$string['settings_showcourseconversations'] = 'Show "Outlook conversations"';
+$string['settings_showcourseconversations_desc'] = 'Enable or disable the "Outlook conversations" link in the course section of the block.';
+$string['settings_showcourseonedrive'] = 'Show "OneDrive files"';
+$string['settings_showcourseonedrive_desc'] = 'Enable or disable the "OneDrive files" link in the course section of the block.';
+$string['settings_showcoursecalendar'] = 'Show "Outlook calendar"';
+$string['settings_showcoursecalendar_desc'] = 'Enable or disable the "Outlook calendar" link in the course section of the block.';
+$string['settings_showcoursenotebook'] = 'Show "Class notebook"';
+$string['settings_showcoursenotebook_desc'] = 'Enable or disable the "Class notebook" link in the course section of the block.';
+$string['settings_showcoursereset'] = 'Show "Course reset options"';
+$string['settings_showcoursereset_desc'] = 'Enable or disable the "Course reset options" link in the course section of the block.';
 $string['defaultprofile'] = 'Profile image';
 $string['settings_geto365link'] = 'Install Office download URL';
 $string['settings_geto365link_desc'] = 'The URL to use for the "Install Office" link.';
@@ -192,6 +208,24 @@ $string['error_course_sync_disabled'] = 'The course is not configured to be sync
 $string['linkcourserequest'] = 'Request course from Teams';
 $string['settings_courserequest'] = 'Request course from Teams';
 $string['settings_courserequest_desc'] = 'Request a new course from Microsoft Teams. After approval, the course will be created and connected to a Team. Microsoft Team members will be enrolled in the course.';
+
+$string['customlinks'] = 'Custom links';
+$string['customlink_addanother'] = 'Add another link';
+$string['customlink_delete'] = 'Delete this link';
+$string['customlink_error_url'] = 'Enter a valid URL starting with http:// or https://';
+$string['customlink_icon'] = 'Icon';
+$string['customlink_name'] = 'Name';
+$string['customlink_nochanges'] = 'No custom links were entered, so there is nothing to save.';
+$string['customlink_showall'] = 'Also show to users who are not connected to Microsoft 365';
+$string['customlink_target'] = 'Open link in';
+$string['customlink_url'] = 'URL';
+$string['customlink_visibility'] = 'Visibility';
+$string['settings_header_general'] = 'General';
+$string['settings_pageheading'] = 'Microsoft block configuration';
+$string['settings_customlinkheading'] = 'Link {$a}';
+$string['settings_customlinktarget_blank'] = 'New window or tab';
+$string['settings_customlinktarget_self'] = 'Same window';
+$string['settings_customlinks_desc'] = 'Add your own links (e.g. an internal chatbot or intranet site) to the block. The name, URL and icon of each link are required. To remove a link, tick "Delete this link" and save.';
 
 // phpcs:enable moodle.Files.LangFilesOrdering.IncorrectOrder
 // phpcs:enable moodle.Files.LangFilesOrdering.UnexpectedComment
